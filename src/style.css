@@ -1,0 +1,64 @@
+@tailwind base;
+
+[x-cloak] {
+  display: none !important;
+}
+
+@tailwind components;
+
+.green-decorated-box {
+  @apply border-2 border-green-900 border-l-green-300 border-t-green-300;
+  @apply bg-gradient-to-b from-green-500 to-green-800;
+  @apply shadow-xl ring-2 ring-black;
+}
+
+.green-decorated-divider {
+  @apply border-2 border-black border-b-green-300 border-t-green-900;
+  @apply -mx-[2px];
+}
+
+.blue-decorated-box {
+  @apply border-2 border-blue-900 border-l-blue-300 border-t-blue-300;
+  @apply bg-gradient-to-b from-blue-500 to-blue-800;
+  @apply shadow-xl ring-2 ring-black;
+}
+
+.blue-decorated-divider {
+  @apply border-2 border-black border-b-blue-300 border-t-blue-900;
+  @apply -mx-[2px];
+}
+
+.button {
+  @apply -skew-x-10 px-4 py-2;
+  @apply border-2 border-yellow-900 border-l-yellow-300 border-t-yellow-300;
+  @apply bg-gradient-to-b from-yellow-500 to-yellow-800;
+  @apply ring-2 ring-black;
+  @apply transition;
+}
+
+.button:hover {
+  @apply scale-105;
+}
+
+.button:active {
+  @apply scale-95;
+}
+
+.button span {
+  @apply skew-x-10 block;
+  @apply text-white;
+}
+
+.link {
+  @apply underline;
+}
+
+@tailwind utilities;
+
+.skew-x-10 {
+  @apply skew-x-[10deg];
+}
+
+.-skew-x-10 {
+  @apply -skew-x-[10deg];
+}

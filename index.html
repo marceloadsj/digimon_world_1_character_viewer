@@ -1,0 +1,269 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Digimon World 1 - Character Viewer</title>
+  </head>
+
+  <body
+    x-data
+    x-cloak
+    class="relative touch-none overflow-hidden bg-zinc-700 bg-gradient-to-b from-zinc-700 to-zinc-900"
+  >
+    <!-- BIN selector -->
+    <template x-if="$store.setup.status !== 'success'">
+      <section class="flex h-full flex-col items-center px-4 py-16">
+        <!-- Logo -->
+        <img
+          alt="Digimon World 1 - Character Viewer"
+          class="relative z-20"
+          src="/logo.png"
+        />
+
+        <!-- Decorated boxes -->
+        <div
+          class="blue-decorated-box -mt-20 h-16 w-full max-w-[min(80%,430px)] -skew-x-[10deg]"
+        ></div>
+        <div
+          class="blue-decorated-box -mt-16 h-24 w-full max-w-[min(75%,340px)] -skew-x-[5deg]"
+        ></div>
+
+        <!-- Title -->
+        <div class="blue-decorated-box relative z-10 -mt-24 p-4 pt-20">
+          <div class="relative text-center text-[min(6vw,24px)] font-black">
+            <h1 class="text-blue-950">Character Viewer</h1>
+
+            <div class="absolute -top-1.5 text-white">Character Viewer</div>
+          </div>
+        </div>
+
+        <!-- Button -->
+        <div class="mt-16">
+          <input
+            id="fileInput"
+            x-init="$store.setup.initListener()"
+            class="hidden"
+            type="file"
+            accept=".bin"
+          />
+
+          <button x-on:click="$store.setup.selectFile()" class="button">
+            <span x-show="$store.setup.status === 'idle'"
+              >Select the Digimon World's BIN</span
+            >
+
+            <span x-show="$store.setup.status === 'loading'">Loading...</span>
+
+            <span x-show="$store.setup.status === 'success'">Rendering...</span>
+
+            <span x-show="$store.setup.status === 'error'"
+              >Invalid BIN, please use USA version of the game</span
+            >
+          </button>
+        </div>
+
+        <div class="green-decorated-box mt-16">
+          <!-- Instructions -->
+          <div class="p-5 text-black">
+            <h3 class="font-bold">Instructions:</h3>
+
+            <ol class="list-inside list-decimal">
+              <li>Please, read everything before you start</li>
+              <li>Click the "Select the Digimon World's BIN" button</li>
+              <li>Select the *.BIN (USA version) owned by you</li>
+              <li>The page will change to display the characters</li>
+            </ol>
+          </div>
+
+          <!-- How it works -->
+          <ul class="list-inside list-disc p-5 pt-0 text-sm">
+            <li>The file will not be uploaded to any server</li>
+            <li>All processing happens directly on your browser</li>
+            <li>Piracy is not endorsed by the creators</li>
+            <li>You must own a legal copy of the game to use the viewer</li>
+          </ul>
+
+          <hr class="green-decorated-divider" />
+
+          <!-- Important -->
+          <div class="p-5 text-white">
+            <h3 class="font-bold">Important:</h3>
+
+            <p>
+              The website is a viewer that interprets the binary data of the
+              *.BIN and renders it accordingly, similar to an emulator.<br />Everything
+              that lives inside the Digimon World's game and extra assets like
+              texts and images are owned by
+              <a
+                href="https://en.wikipedia.org/wiki/Bandai"
+                class="link"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Bandai Co., Ltd</a
+              >.
+            </p>
+
+            <p class="mt-5 text-sm opacity-75">
+              This fan-made project has no relation with Bandai or others. It
+              has no commercial purpose and the
+              <strong>codebase</strong> is distributed under the
+              <a
+                href="https://www.gnu.org/licenses/agpl-3.0.en.html"
+                class="link"
+                target="_blank"
+                rel="noopener noreferrer"
+                >AGPL License</a
+              >.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-16 space-y-8 text-sm text-white opacity-75">
+          <ul>
+            <li>
+              <a
+                href="https://github.com/marceloadsj/digimon_world_1_character_viewer.git"
+                class="link"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Github Repository</a
+              >
+            </li>
+          </ul>
+
+          <div>
+            <h3 class="font-bold">Credits:</h3>
+
+            <ul class="list-inside list-disc">
+              <li>
+                <a
+                  href="https://github.com/sydmontague"
+                  class="link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  SydMontague - Main contributor for the game's binary structure
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="https://github.com/roblouie/tmd"
+                  class="link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Roblouie - Creator of the TMD interpreter
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="https://ultimatepopculture.fandom.com/wiki/Digimon_World_(series)"
+                  class="link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >Digimon World's logo from Bandai, extracted from
+                  Fandom/Ultimate Pop Culture</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </template>
+
+    <!-- Viewer -->
+    <template x-if="$store.setup.status === 'success'">
+      <section class="select-none">
+        <!-- Animation selector -->
+        <div
+          x-data="{ open: false }"
+          class="green-decorated-box absolute top-0 flex w-64 flex-col md:bottom-0"
+          :class="open ? 'z-10 bottom-0' : ''"
+        >
+          <!-- Info -->
+          <button class="p-5" @click="open = !open">
+            <h1
+              class="text-center text-xl font-black text-black"
+              x-text="$store.data.digimon.info.name"
+            ></h1>
+          </button>
+
+          <hr
+            class="green-decorated-divider"
+            :class="open ? 'block' : 'hidden md:block'"
+          />
+
+          <!-- Animations list -->
+          <div
+            class="flex-1 overflow-scroll p-5"
+            :class="open ? 'block' : 'hidden md:block'"
+          >
+            <div class="flex flex-col">
+              <template
+                x-for="(animation, index) in $store.data.digimon.animations"
+              >
+                <button
+                  :class="$store.data.animationIndex === index ? 'bg-green-900 text-white' : 'text-black'"
+                  class="mt-1 flex p-2 transition"
+                  @click="$store.data.setAnimationIndex(index); open = false"
+                  x-show="animation"
+                >
+                  <span class="px-3" x-text="index"></span>
+                  <span
+                    class="flex-1"
+                    x-text="$store.data.ANIMATIONS[index]"
+                  ></span>
+                </button>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- Digimon selector -->
+        <div
+          x-data="{ open: false }"
+          class="blue-decorated-box absolute bottom-0 right-0 flex w-64 flex-col-reverse md:top-0 md:flex-col"
+          :class="open ? 'z-10 top-0' : ''"
+        >
+          <!-- Title -->
+          <button class="p-5" @click="open = !open">
+            <h3 class="text-center text-xl font-black text-black">Digimons</h3>
+          </button>
+
+          <hr
+            class="blue-decorated-divider"
+            :class="open ? 'block' : 'hidden md:block'"
+          />
+
+          <!-- Digimons list -->
+          <div
+            class="flex-1 overflow-scroll p-5"
+            :class="open ? 'block' : 'hidden md:block'"
+          >
+            <div class="flex flex-col space-y-1">
+              <template x-for="info in $store.data.INFOS">
+                <button
+                  :class="$store.data.index === info?.index ? 'bg-blue-900 text-white' : 'text-black'"
+                  class="flex p-2 transition"
+                  @click="info && $store.data.setIndex(info.index); open = false"
+                >
+                  <span class="px-3" x-text="info?.index"></span>
+                  <span class="flex-1" x-text="info?.name"></span>
+                </button>
+              </template>
+            </div>
+          </div>
+        </div>
+      </section>
+    </template>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
