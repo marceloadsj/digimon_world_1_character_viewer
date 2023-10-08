@@ -7,7 +7,7 @@ export const SKELETON_POINTERS = () => {
   if (skeletonPointers == null) {
     skeletonPointers = window.value.slice(
       SKELETON_POINTERS_POINTER,
-      SKELETON_POINTERS_POINTER + SKELETON_POINTERS_BYTE_LENGTH,
+      SKELETON_POINTERS_POINTER + SKELETON_POINTERS_BYTE_LENGTH + 1,
     );
   }
 

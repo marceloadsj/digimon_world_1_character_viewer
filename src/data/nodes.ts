@@ -7,7 +7,7 @@ export const NODES = () => {
   if (nodes == null) {
     nodes = window.value.slice(
       NODES_POINTER,
-      NODES_POINTER + NODES_BYTE_LENGTH,
+      NODES_POINTER + NODES_BYTE_LENGTH + 1,
     );
   }
 
@@ -23,7 +23,7 @@ export const BABY_NODES = () => {
   if (babyNodes == null) {
     babyNodes = window.value.slice(
       BABY_NODES_POINTER,
-      BABY_NODES_POINTER + BABY_NODES_BYTE_LENGTH,
+      BABY_NODES_POINTER + BABY_NODES_BYTE_LENGTH + 1,
     );
   }
 

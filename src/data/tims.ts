@@ -7,7 +7,7 @@ export const ALLTIM = () => {
   if (tims == null) {
     tims = window.value.slice(
       ALLTIM_POINTER,
-      ALLTIM_POINTER + ALLTIM_BYTE_LENGTH,
+      ALLTIM_POINTER + ALLTIM_BYTE_LENGTH + 1,
     );
   }
 
