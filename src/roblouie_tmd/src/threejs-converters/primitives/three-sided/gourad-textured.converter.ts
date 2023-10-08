@@ -1,11 +1,11 @@
 import * as THREE from "three";
 import { conversionUtil } from "../../conversion-util";
-import { GouradTexturedData } from "../../../tmd/structs/primitives/three-sided/gourad-textured";
+import { ThreeSidedGouradTexturedData } from "../../../tmd/structs/primitives/three-sided.struct";
 import { NormalData } from "../../../tmd/structs/normal.struct";
 
 export const GouradTexturedConverter = (
   vertices: Array<THREE.Vector3>,
-  packetData: GouradTexturedData,
+  packetData: ThreeSidedGouradTexturedData,
   normals: NormalData[],
 ) => {
   const normal0 = conversionUtil.getThreeJSNormalFromIndex(

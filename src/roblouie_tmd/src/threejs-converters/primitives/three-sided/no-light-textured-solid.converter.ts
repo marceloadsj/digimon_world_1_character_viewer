@@ -1,9 +1,9 @@
 import * as THREE from "three";
-import { NoLightTexturedSolidData } from "../../../tmd/structs/primitives/three-sided/no-light-textured-solid.struct";
+import { ThreeSidedNoLightTexturedSolidData } from "../../../tmd/structs/primitives/three-sided.struct";
 
 export const NoLightTexturedSolidConverter = (
   vertices: Array<THREE.Vector3>,
-  packetData: NoLightTexturedSolidData,
+  packetData: ThreeSidedNoLightTexturedSolidData,
 ) => {
   return {
     faceNormals: [null, null, null],

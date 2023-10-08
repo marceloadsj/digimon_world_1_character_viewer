@@ -10,6 +10,7 @@ export class MaterialTracker {
   constructor() {
     this.materials = [];
     this.texturePages = [];
+    this.nonTexturedIndex = undefined as unknown as number;
 
     for (let i = 0; i < 32; i++) {
       this.texturePages.push({

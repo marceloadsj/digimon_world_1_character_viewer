@@ -349,24 +349,32 @@ export class Primitive {
         };
       }
     }
+
+    throw Error("Unknown error");
   }
 
   get textureCLUTXPosition() {
     if (this.isTextured && this.packetData) {
       return (this.packetData.cba & 0b0000000000111111) << 4;
     }
+
+    throw Error("Unknown error");
   }
 
   get textureCLUTYPosition() {
     if (this.isTextured && this.packetData) {
       return (this.packetData.cba & 0b0111111111000000) >> 6;
     }
+
+    throw Error("Unknown error");
   }
 
   get texturePage() {
     if (this.isTextured && this.packetData) {
       return this.packetData.tsb & 0b0000000000011111;
     }
+
+    throw Error("Unknown error");
   }
 
   get textureSemiTransparencyMethod() {
@@ -384,6 +392,8 @@ export class Primitive {
           return "100 % background + 25 % polygon";
       }
     }
+
+    throw Error("Unknown error");
   }
 
   get textureBitsPerPixel() {
@@ -397,6 +407,8 @@ export class Primitive {
         return 16;
       }
     }
+
+    throw Error("Unknown error");
   }
   // End texture helpers
 }

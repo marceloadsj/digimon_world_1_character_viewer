@@ -1,9 +1,9 @@
 import { PSXColor } from "../core/psx-color";
-import { TIM } from '../tim/tim';
-import { Point } from '../core/point';
+import { TIM } from "../tim/tim";
+import { Point } from "../core/point";
 
 export class VRAM {
-  static readonly BEETLE_PSX_VRAM_OFFSET = 0x20AA19;
+  static readonly BEETLE_PSX_VRAM_OFFSET = 0x20aa19;
 
   static readonly VRAM_NATIVE_WIDTH = 1024;
   static readonly VRAM_NATIVE_HEIGHT = 512;
@@ -23,12 +23,16 @@ export class VRAM {
     if (vramArrayBuffer) {
       this.vramData = new Uint16Array(vramArrayBuffer);
     } else {
-      this.vramData = new Uint16Array(VRAM.VRAM_NATIVE_WIDTH * VRAM.VRAM_NATIVE_HEIGHT);
+      this.vramData = new Uint16Array(
+        VRAM.VRAM_NATIVE_WIDTH * VRAM.VRAM_NATIVE_HEIGHT,
+      );
     }
   }
 
   static fromBeetlePSXSaveState(arrayBuffer: ArrayBuffer): VRAM {
-    const endOfVRAM = VRAM.BEETLE_PSX_VRAM_OFFSET + VRAM.VRAM_BYTE_WIDTH * VRAM.VRAM_BYTE_HEIGHT;
+    const endOfVRAM =
+      VRAM.BEETLE_PSX_VRAM_OFFSET +
+      VRAM.VRAM_BYTE_WIDTH * VRAM.VRAM_BYTE_HEIGHT;
     return new VRAM(arrayBuffer.slice(VRAM.BEETLE_PSX_VRAM_OFFSET, endOfVRAM));
   }
 
@@ -54,7 +58,11 @@ export class VRAM {
           const destinationX = tim.clutHeader.vramX + columnIndex;
           const destinationY = tim.clutHeader.vramY + rowIndex;
 
-          this.setVramDataByCoordinate(destinationX, destinationY, color.rawColorValue);
+          this.setVramDataByCoordinate(
+            destinationX,
+            destinationY,
+            color.rawColorValue,
+          );
         });
       });
     }
@@ -62,13 +70,11 @@ export class VRAM {
     let vramX = tim.pixelDataHeader.vramX;
     let vramY = tim.pixelDataHeader.vramY;
 
-    tim.pixelData.forEach((pixelValue, index) => {
-
+    tim.pixelData.forEach((pixelValue) => {
       // TODO: More research on what values equate to transparent so transparent parts don't overwrite other textures
       //if (pixelValue !== 65535) {
-        this.setVramDataByCoordinate(vramX, vramY, pixelValue);
+      this.setVramDataByCoordinate(vramX, vramY, pixelValue);
       //}
-      
 
       vramX++;
       if (vramX === tim.pixelDataHeader.vramX + tim.pixelDataHeader.dataWidth) {
@@ -81,11 +87,15 @@ export class VRAM {
   clearTIMFromVRAM(tim: TIM, clearColor?: PSXColor) {
     if (tim.hasCLUT) {
       tim.cluts.forEach((colors, rowIndex) => {
-        colors.forEach((color, columnIndex) => {
+        colors.forEach((_, columnIndex) => {
           const destinationX = tim.clutHeader.vramX + columnIndex;
           const destinationY = tim.clutHeader.vramY + rowIndex;
 
-          this.setVramDataByCoordinate(destinationX, destinationY, clearColor ? clearColor.rawColorValue: 0);
+          this.setVramDataByCoordinate(
+            destinationX,
+            destinationY,
+            clearColor ? clearColor.rawColorValue : 0,
+          );
         });
       });
     }
@@ -93,8 +103,12 @@ export class VRAM {
     let vramX = tim.pixelDataHeader.vramX;
     let vramY = tim.pixelDataHeader.vramY;
 
-    tim.pixelData.forEach((pixelValue, index) => {
-      this.setVramDataByCoordinate(vramX, vramY, clearColor ? clearColor.rawColorValue : 0);
+    tim.pixelData.forEach(() => {
+      this.setVramDataByCoordinate(
+        vramX,
+        vramY,
+        clearColor ? clearColor.rawColorValue : 0,
+      );
 
       vramX++;
       if (vramX === tim.pixelDataHeader.vramX + tim.pixelDataHeader.dataWidth) {
@@ -120,7 +134,8 @@ export class VRAM {
       clearColor = PSXColor.FromTwentyFourBitValue(0x000000);
     }
 
-    const tpageSize = VRAM.TEXTURE_PAGE_NATIVE_WIDTH * VRAM.TEXTURE_PAGE_NATIVE_HEIGHT;
+    const tpageSize =
+      VRAM.TEXTURE_PAGE_NATIVE_WIDTH * VRAM.TEXTURE_PAGE_NATIVE_HEIGHT;
     let currentRow = 1;
     let dataIndex = xPos + yPos * VRAM.VRAM_NATIVE_WIDTH;
 
@@ -140,7 +155,6 @@ export class VRAM {
     this.vramData[index] = value;
   }
 
-
   getTexturePageData(texturePage: number) {
     let xPos: number;
     let yPos: number;
@@ -153,7 +167,9 @@ export class VRAM {
       yPos = 256;
     }
 
-    let rawTexturePageData = new Uint16Array(VRAM.TEXTURE_PAGE_NATIVE_WIDTH * VRAM.TEXTURE_PAGE_NATIVE_HEIGHT);
+    let rawTexturePageData = new Uint16Array(
+      VRAM.TEXTURE_PAGE_NATIVE_WIDTH * VRAM.TEXTURE_PAGE_NATIVE_HEIGHT,
+    );
 
     let dataIndex = xPos + yPos * VRAM.VRAM_NATIVE_WIDTH;
     let currentRow = 1;
@@ -169,55 +185,24 @@ export class VRAM {
     return rawTexturePageData;
   }
 
-  getTexturePageImageData(bitsPerPixel: number, texturePage: number, clutX?: number, clutY?: number) {
-    let xPos: number;
-    let yPos: number;
-
-    if (texturePage < 16) {
-      xPos = texturePage * 64;
-      yPos = 0;
-    } else {
-      xPos = (texturePage - 16) * 64;
-      yPos = 256;
-    }
-
-    let dataIndex = xPos + yPos * VRAM.VRAM_NATIVE_WIDTH;
-
-    if (bitsPerPixel === 4) {
-      const clutColors = this.getClutColors(clutX!, clutY!, bitsPerPixel);
-      return this.getFourBitTexture(dataIndex, clutColors);
-    }
-    
-    if (bitsPerPixel === 8) {
-      const clutColors = this.getClutColors(clutX!, clutY!, bitsPerPixel);
-      return this.getEightBitTexture(dataIndex, clutColors);
-    }
-
-    if (bitsPerPixel === 16) {
-      return this.getSixteenBitTexture(dataIndex);
-    }
-
-    if (bitsPerPixel === 24) {
-      return this.getTwentyFourBitTexture(dataIndex);
-    }
-    
-  }
-
   getFourBitTexture(dataIndex: number, clutColors: PSXColor[]): ImageData {
     // One texture page is 64 16-bit units across, or 256 4-bit units. Since we are dealing with
     // a 4-bit texture here, we're dealing with 256 final pixels. Since this is the full accessible
     // width, we only fetch one texture page.
 
-    const imageData = new ImageData(VRAM.ACCESSIBLE_TEXTURE_WIDTH, VRAM.ACCESSIBLE_TEXTURE_HEIGHT);
+    const imageData = new ImageData(
+      VRAM.ACCESSIBLE_TEXTURE_WIDTH,
+      VRAM.ACCESSIBLE_TEXTURE_HEIGHT,
+    );
 
     let currentRow = 1;
     let currentPixel = 0;
     for (let i = 0; i < imageData.data.length; i += 16) {
       const pixelData = this.vramData[dataIndex];
       const firstColorIndex = pixelData & 0b1111;
-      const secondColorIndex = pixelData >> 4 & 0b1111;
-      const thirdColorIndex = pixelData >> 8 & 0b1111;
-      const fourthColorIndex = pixelData >> 12 & 0b1111;
+      const secondColorIndex = (pixelData >> 4) & 0b1111;
+      const thirdColorIndex = (pixelData >> 8) & 0b1111;
+      const fourthColorIndex = (pixelData >> 12) & 0b1111;
 
       this.setImageDataPixel(imageData, i, clutColors[firstColorIndex]);
       this.setImageDataPixel(imageData, i + 4, clutColors[secondColorIndex]);
@@ -243,11 +228,14 @@ export class VRAM {
     // is capable of accessing.
     const texturePagesToFetch = 2;
 
-    const imageData = new ImageData(VRAM.ACCESSIBLE_TEXTURE_WIDTH, VRAM.ACCESSIBLE_TEXTURE_WIDTH);
+    const imageData = new ImageData(
+      VRAM.ACCESSIBLE_TEXTURE_WIDTH,
+      VRAM.ACCESSIBLE_TEXTURE_WIDTH,
+    );
 
     let currentRow = 1;
     let currentPixel = 0;
-    for (let i = 0; i < imageData.data.length; i+= 8) {
+    for (let i = 0; i < imageData.data.length; i += 8) {
       const pixelData = this.vramData[dataIndex];
       const firstColorIndex = pixelData & 0b11111111;
       const secondColorIndex = pixelData >> 8;
@@ -258,7 +246,9 @@ export class VRAM {
       dataIndex++;
       currentPixel += 2;
       if (currentPixel === VRAM.ACCESSIBLE_TEXTURE_WIDTH * currentRow) {
-        dataIndex += VRAM.VRAM_NATIVE_WIDTH - VRAM.TEXTURE_PAGE_NATIVE_WIDTH * texturePagesToFetch;
+        dataIndex +=
+          VRAM.VRAM_NATIVE_WIDTH -
+          VRAM.TEXTURE_PAGE_NATIVE_WIDTH * texturePagesToFetch;
         currentRow++;
       }
     }
@@ -274,7 +264,10 @@ export class VRAM {
     // is capable of accessing.
     const texturePagesToFetch = 4;
 
-    const imageData = new ImageData(VRAM.ACCESSIBLE_TEXTURE_WIDTH, VRAM.ACCESSIBLE_TEXTURE_HEIGHT);
+    const imageData = new ImageData(
+      VRAM.ACCESSIBLE_TEXTURE_WIDTH,
+      VRAM.ACCESSIBLE_TEXTURE_HEIGHT,
+    );
 
     let currentRow = 1;
     let currentPixel = 0;
@@ -285,9 +278,11 @@ export class VRAM {
       this.setImageDataPixel(imageData, i, color);
 
       dataIndex++;
-      currentPixel++
+      currentPixel++;
       if (currentPixel === VRAM.ACCESSIBLE_TEXTURE_WIDTH * currentRow) {
-        dataIndex += VRAM.VRAM_NATIVE_WIDTH - VRAM.TEXTURE_PAGE_NATIVE_WIDTH * texturePagesToFetch;
+        dataIndex +=
+          VRAM.VRAM_NATIVE_WIDTH -
+          VRAM.TEXTURE_PAGE_NATIVE_WIDTH * texturePagesToFetch;
         currentRow++;
       }
     }
@@ -297,7 +292,10 @@ export class VRAM {
 
   getTwentyFourBitTexture(dataIndex: number): ImageData {
     // Presently only grabs one texture page, as I've never seen even a 24-bit texture.
-    const imageData = new ImageData(VRAM.ACCESSIBLE_TEXTURE_WIDTH, VRAM.ACCESSIBLE_TEXTURE_HEIGHT);
+    const imageData = new ImageData(
+      VRAM.ACCESSIBLE_TEXTURE_WIDTH,
+      VRAM.ACCESSIBLE_TEXTURE_HEIGHT,
+    );
 
     let currentRow = 1;
     let currentPixel = 0;
@@ -309,12 +307,16 @@ export class VRAM {
       const firstBlue = firstBlueSecondRed & 0b11111111;
       const secondRed = firstBlueSecondRed >> 8;
 
-      const firstPixel = PSXColor.FromTwentyFourBitValue(firstRedGreen + (firstBlue << 16));
-      const secondPixel = PSXColor.FromTwentyFourBitValue(secondRed + (secondGreenBlue << 8));
+      const firstPixel = PSXColor.FromTwentyFourBitValue(
+        firstRedGreen + (firstBlue << 16),
+      );
+      const secondPixel = PSXColor.FromTwentyFourBitValue(
+        secondRed + (secondGreenBlue << 8),
+      );
       this.setImageDataPixel(imageData, i, firstPixel);
       this.setImageDataPixel(imageData, i + 4, secondPixel);
 
-      dataIndex+= 3;
+      dataIndex += 3;
       currentPixel += 2;
       if (currentPixel === VRAM.ACCESSIBLE_TEXTURE_WIDTH * currentRow) {
         dataIndex += VRAM.VRAM_NATIVE_WIDTH - VRAM.TEXTURE_PAGE_NATIVE_WIDTH;
@@ -326,7 +328,10 @@ export class VRAM {
   }
 
   getFullVRAMImageData() {
-    const imageData = new ImageData(VRAM.VRAM_NATIVE_WIDTH, VRAM.VRAM_NATIVE_HEIGHT);
+    const imageData = new ImageData(
+      VRAM.VRAM_NATIVE_WIDTH,
+      VRAM.VRAM_NATIVE_HEIGHT,
+    );
     let dataIndex = 0;
 
     for (let i = 0; i < imageData.data.length; i += 4) {
@@ -343,8 +348,11 @@ export class VRAM {
   getClutColors(clutX: number, clutY: number, bitsPerPixel: number) {
     const numberOfColors = bitsPerPixel === 4 ? 16 : 256;
     const clut16BitPos = clutX + clutY * VRAM.VRAM_NATIVE_WIDTH;
-    const clutData = this.vramData.slice(clut16BitPos, clut16BitPos + numberOfColors);
-    
+    const clutData = this.vramData.slice(
+      clut16BitPos,
+      clut16BitPos + numberOfColors,
+    );
+
     const dataView = new DataView(clutData.buffer);
     const colors = [];
 
@@ -356,11 +364,14 @@ export class VRAM {
     return colors;
   }
 
-  private setImageDataPixel(imageData: ImageData, imageDataIndex: number, color: PSXColor) {
+  private setImageDataPixel(
+    imageData: ImageData,
+    imageDataIndex: number,
+    color: PSXColor,
+  ) {
     imageData.data[imageDataIndex] = color.red;
     imageData.data[imageDataIndex + 1] = color.green;
     imageData.data[imageDataIndex + 2] = color.blue;
     imageData.data[imageDataIndex + 3] = color.alpha;
   }
-
 }

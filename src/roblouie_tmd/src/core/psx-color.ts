@@ -1,16 +1,25 @@
 // TODO: Refactor to just be color or playstation color, and have static fromFifteenBit, from 24bit.
 export class PSXColor {
+  constructor() {
+    this.rawColorValue = undefined as unknown as number;
+    this.red = undefined as unknown as number;
+    this.green = undefined as unknown as number;
+    this.blue = undefined as unknown as number;
+    this.alpha = undefined as unknown as number;
+    this.type = undefined as unknown as "15-bit" | "24-bit";
+  }
+
   rawColorValue: number;
   red: number;
   green: number;
   blue: number;
   alpha: number;
-  type: '15-bit' | '24-bit';
+  type: "15-bit" | "24-bit";
 
   static FromSixteenBitValue(sixteenBitColorValue: number): PSXColor {
     const color = new PSXColor();
     color.rawColorValue = sixteenBitColorValue;
-    color.type = '15-bit';
+    color.type = "15-bit";
 
     const red = sixteenBitColorValue & 0b11111;
     const green = (sixteenBitColorValue & 0b1111100000) >> 5;
@@ -34,12 +43,12 @@ export class PSXColor {
   static FromTwentyFourBitValue(twentyFourBitValue: number): PSXColor {
     const color = new PSXColor();
     color.rawColorValue = twentyFourBitValue;
-    color.type = '24-bit';
+    color.type = "24-bit";
 
     const singleColorBitmask = 0b11111111;
     color.red = twentyFourBitValue & singleColorBitmask;
-    color.green = twentyFourBitValue >> 8 & singleColorBitmask;
-    color.blue = twentyFourBitValue >> 16 & singleColorBitmask;
+    color.green = (twentyFourBitValue >> 8) & singleColorBitmask;
+    color.blue = (twentyFourBitValue >> 16) & singleColorBitmask;
     color.alpha = 255;
 
     return color;

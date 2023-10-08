@@ -13,7 +13,8 @@
   <body
     x-data
     x-cloak
-    class="relative touch-none overflow-hidden bg-zinc-700 bg-gradient-to-b from-zinc-700 to-zinc-900"
+    class="relative touch-none bg-zinc-700 bg-gradient-to-b from-zinc-700 to-zinc-900"
+    :class="$store.setup.status === 'success' ? 'overflow-hidden' : ''"
   >
     <!-- BIN selector -->
     <template x-if="$store.setup.status !== 'success'">

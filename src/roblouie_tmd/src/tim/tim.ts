@@ -12,15 +12,6 @@ export class TIM {
   static EightBitMultiplier = 2;
   static TwentyFourBitMultiplier = 2 / 3;
 
-  header: TimHeaderData;
-  clutHeader: SectionHeaderData;
-  pixelDataHeader: SectionHeaderData;
-  pixelData: Uint16Array;
-
-  cluts: PSXColor[][];
-
-  private _byteLength: number;
-
   constructor(arrayBuffer: ArrayBuffer, startOffset = 0) {
     this.header = timHeaderStruct.createObject<TimHeaderData>(
       arrayBuffer,
@@ -29,6 +20,9 @@ export class TIM {
     );
 
     let pixelDataStart = this.header.nextOffset;
+
+    this.clutHeader = undefined as unknown as SectionHeaderData;
+    this.cluts = undefined as unknown as PSXColor[][];
 
     if (this.hasCLUT) {
       this.clutHeader = sectionHeaderStruct.createObject<SectionHeaderData>(
@@ -77,6 +71,13 @@ export class TIM {
     );
     this._byteLength = pixelDataEnd - startOffset;
   }
+
+  header: TimHeaderData;
+  clutHeader: SectionHeaderData;
+  pixelDataHeader: SectionHeaderData;
+  pixelData: Uint16Array;
+  cluts: PSXColor[][];
+  private _byteLength: number;
 
   get pixelMode(): TIMPixelMode {
     return this.header.flag & 0b111;
@@ -173,6 +174,8 @@ export class TIM {
         `Error, couldn't open file with pixel mode: ${this.pixelMode}`,
       );
     }
+
+    return;
   }
 
   create4BitImageData(clut: PSXColor[]): ImageData {
