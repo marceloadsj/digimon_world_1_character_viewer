@@ -29,7 +29,7 @@ export class Artboard {
   }
 
   private newRenderer() {
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ logarithmicDepthBuffer: true });
     renderer.setSize(this.windowWidth, this.windowHeight);
     renderer.setClearColor(0x000000, 0);
 
