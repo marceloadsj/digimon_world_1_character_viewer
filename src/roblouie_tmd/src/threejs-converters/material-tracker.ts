@@ -92,7 +92,7 @@ export class MaterialTracker {
           transparent: true,
           alphaTest: 0.3,
           opacity: primitive.isTranslucent ? 0.5 : 1,
-          side: THREE.DoubleSide,
+          side: THREE.BackSide,
         });
       } else {
         material = new THREE.MeshBasicMaterial({
@@ -100,7 +100,7 @@ export class MaterialTracker {
           transparent: true,
           alphaTest: 0.3,
           opacity: primitive.isTranslucent ? 0.5 : 1,
-          side: THREE.DoubleSide,
+          side: THREE.BackSide,
         });
       }
 

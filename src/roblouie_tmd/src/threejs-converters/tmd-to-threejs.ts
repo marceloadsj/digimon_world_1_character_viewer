@@ -233,9 +233,20 @@ export class TMDToThreeJS {
         ? VRAM.ACCESSIBLE_TEXTURE_HEIGHT
         : textureData.height;
 
-    const uv0 = new THREE.Vector2(u0 / width, v0 / height);
-    const uv1 = new THREE.Vector2(u1 / width, v1 / height);
-    const uv2 = new THREE.Vector2(u2 / width, v2 / height);
+    const uvThreshold = +0.0001;
+
+    const uv0 = new THREE.Vector2(
+      u0 / width + uvThreshold,
+      v0 / height + uvThreshold,
+    );
+    const uv1 = new THREE.Vector2(
+      u1 / width + uvThreshold,
+      v1 / height + uvThreshold,
+    );
+    const uv2 = new THREE.Vector2(
+      u2 / width + uvThreshold,
+      v2 / height + uvThreshold,
+    );
     return [uv0, uv1, uv2];
   }
 
@@ -254,9 +265,20 @@ export class TMDToThreeJS {
         ? VRAM.ACCESSIBLE_TEXTURE_HEIGHT
         : textureData.height;
 
-    const uv1 = new THREE.Vector2(u1 / width, v1 / height);
-    const uv2 = new THREE.Vector2(u2 / width, v2 / height);
-    const uv3 = new THREE.Vector2(u3 / width, v3 / height);
+    const uvThreshold = +0.0001;
+
+    const uv1 = new THREE.Vector2(
+      u1 / width + uvThreshold,
+      v1 / height + uvThreshold,
+    );
+    const uv2 = new THREE.Vector2(
+      u2 / width + uvThreshold,
+      v2 / height + uvThreshold,
+    );
+    const uv3 = new THREE.Vector2(
+      u3 / width + uvThreshold,
+      v3 / height + uvThreshold,
+    );
     return [uv1, uv3, uv2];
   }
 

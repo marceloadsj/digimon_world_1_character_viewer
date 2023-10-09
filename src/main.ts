@@ -122,33 +122,48 @@ function initPointerListeners(artboard: Artboard) {
   let [x, y] = [-1, -1];
 
   window.addEventListener("pointerdown", (event) => {
-    x = event.offsetX;
-    y = event.offsetY;
+    if (
+      event.target instanceof HTMLElement &&
+      event.target.tagName === "CANVAS"
+    ) {
+      x = event.offsetX;
+      y = event.offsetY;
+    }
   });
 
   window.addEventListener("pointermove", (event) => {
-    if (data.digimon?.rootNode) {
-      if (x > 0 || y > 0) {
-        const parsedX = (event.offsetY - y) / 100;
-        const parsedY = (event.offsetX - x) / 100;
+    if (
+      event.target instanceof HTMLElement &&
+      event.target.tagName === "CANVAS"
+    ) {
+      if (data.digimon?.rootNode) {
+        if (x > 0 || y > 0) {
+          const parsedX = (event.offsetY - y) / 100;
+          const parsedY = (event.offsetX - x) / 100;
 
-        data.digimon.rootNode.rotation.x += parsedX;
-        data.digimon.rootNode.rotation.y += parsedY;
+          data.digimon.rootNode.rotation.x += parsedX;
+          data.digimon.rootNode.rotation.y += parsedY;
 
-        artboard.floorObject.rotation.x += parsedX;
-        artboard.floorObject.rotation.z += parsedY; // Using Z to rotate the plane correctly
+          artboard.floorObject.rotation.x += parsedX;
+          artboard.floorObject.rotation.z += parsedY; // Using Z to rotate the plane correctly
 
-        x = event.offsetX;
-        y = event.offsetY;
+          x = event.offsetX;
+          y = event.offsetY;
 
-        artboard.render();
+          artboard.render();
+        }
       }
     }
   });
 
-  window.addEventListener("pointerup", () => {
-    x = -1;
-    y = -1;
+  window.addEventListener("pointerup", (event) => {
+    if (
+      event.target instanceof HTMLElement &&
+      event.target.tagName === "CANVAS"
+    ) {
+      x = -1;
+      y = -1;
+    }
   });
 }
 
